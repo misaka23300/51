@@ -1,0 +1,59 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/21/2025 14:42:13 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          extern uchar seg[8];
+   4          uchar adc;
+   5          void main()
+   6          {
+   7   1          boot_init();
+   8   1          while (1)
+   9   1          {
+  10   2              //DAwrite(255);
+  11   2          }
+  12   1      
+  13   1      }
+  14          
+  15          
+  16          void timer() interrupt 1
+  17          {
+  18   1          static uint i;
+  19   1          i = (i + 1) % 3000;
+  20   1      
+  21   1          if (i % 1 == 0)
+  22   1          {
+  23   2              seg_display();
+  24   2          }
+  25   1      
+  26   1      
+  27   1          if (i % 500 == 0)
+  28   1          {
+  29   2              adc = ADread(0x03);
+  30   2      
+  31   2              seg[0] = adc / 100 % 10;
+  32   2              seg[1] = adc /10 % 10;
+  33   2              seg[2] = adc % 10;
+  34   2          }
+  35   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    156    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
