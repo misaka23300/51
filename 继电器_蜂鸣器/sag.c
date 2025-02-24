@@ -1,3 +1,6 @@
+
+
+
 void s_and_g(uchar i,bit state)
 {
     static uchar tmp;
