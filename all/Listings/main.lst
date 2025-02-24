@@ -1,0 +1,210 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/24/2025 20:57:13 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+*** WARNING C318 IN LINE 5 OF main.h: can't open file 'seg.h'
+   2          
+   3          #define KEY_TIME 5
+   4          #define LED_TIME 3
+   5          
+   6          extern uchar seg[8];
+   7          extern uchar led[8];
+   8          
+   9          uchar press, percent;
+  10          uchar state;
+  11          
+  12          bit key_flag, ne555_flag;
+  13          
+  14          uint times, times1, freq;
+  15          
+  16          
+  17          
+  18          // state
+  19          // 0 -> ne55
+  20          // 1 -> pwm
+  21          void main()
+  22          {
+  23   1          boot_init();
+  24   1      
+  25   1          while (1)
+  26   1          {
+  27   2              if (led_flag && state != 2)
+*** ERROR C202 IN LINE 27 OF main.c: 'led_flag': undefined identifier
+  28   2              {
+  29   3                  led_display();
+  30   3                  led_flag = 0;
+  31   3              }
+  32   2      
+  33   2      
+  34   2              if (led_flag && state == 2)
+  35   2              {
+  36   3                  if (one_tag != 2)
+  37   3                  {
+  38   4                      one_tag = 2;
+  39   4                      pwm_timer_0();
+  40   4                  }
+  41   3      
+  42   3      
+  43   3                  bit j;
+  44   3                  uchar i;
+  45   3      
+  46   3                  j = pwm_flag;
+  47   3      
+  48   3                  for(i = 0; i < 8; i++);
+  49   3                  {
+  50   4                      led[i] = j;
+  51   4                  }
+  52   3      
+C51 COMPILER V9.60.7.0   MAIN                                                              02/24/2025 20:57:13 PAGE 2   
+
+  53   3                  led_display();
+  54   3              }
+  55   2      
+  56   2              if (key_flag)
+  57   2              {
+  58   3                  press = key_scan();
+  59   3      
+  60   3                  if (press == 4)
+  61   3                  {
+  62   4                      state = (state + 1) % 3;
+  63   4                  }
+  64   3      
+  65   3                  if (state == 1)
+  66   3                  {
+  67   4                      if (press == 9)
+  68   4                      {
+  69   5                          percent++;
+  70   5                          if (percent == 99)
+  71   5                          {
+  72   6                              percent = 0;
+  73   6                          }
+  74   5                      }
+  75   4      
+  76   4                      if (press == 8)
+  77   4                      {
+  78   5                          percent--;
+  79   5                          if (percent == 0)
+  80   5                          {
+  81   6                              percent = 99;
+  82   6                          }
+  83   5                      }
+  84   4                  }
+  85   3      
+  86   3      
+  87   3                  key_flag = 0;
+  88   3              }
+  89   2      
+  90   2              if (ne555_flag && state == 1)
+  91   2              {
+  92   3                  freq = times * 30000 + times1;
+  93   3                  times = 0;
+  94   3                  times1 = 0;
+  95   3      
+  96   3                  if (one_tag != 1)
+  97   3                  {
+  98   4                      one_tag = 1;
+  99   4                      ne555_timer_0();
+ 100   4                      seg[0] = 22;
+ 101   4                      seh[1] = 14;
+ 102   4                  }
+ 103   3                  seg[2] = freq / 100000 % 10;
+ 104   3                  seg[3] = freq / 10000 % 10;
+ 105   3                  seg[4] = freq / 1000 % 10;
+ 106   3                  seg[5] = freq / 100 % 10;
+ 107   3                  seg[6] = freq / 10 % 10;
+ 108   3                  seg[7] = freq % 10;
+ 109   3      
+ 110   3              }
+ 111   2      
+ 112   2              if (state == 2)
+ 113   2              {
+ 114   3                  
+C51 COMPILER V9.60.7.0   MAIN                                                              02/24/2025 20:57:13 PAGE 3   
+
+ 115   3              }
+ 116   2      
+ 117   2              if (state != 1)
+ 118   2              {
+ 119   3                  ET0 = 0;
+ 120   3              }
+ 121   2      
+ 122   2              if (state == 3)
+ 123   2              {
+ 124   3                  
+ 125   3              }
+ 126   2      
+ 127   2      
+ 128   2          }
+ 129   1      }
+ 130          
+ 131          void Timer1_Isr(void) interrupt 3
+ 132          {
+ 133   1          srtatic uchar i;
+ 134   1          i = (i + 1) % 30000;
+ 135   1      
+ 136   1          seg_display();
+ 137   1      
+ 138   1      
+ 139   1          if (i % KEY_TIME == 0)
+ 140   1          {
+ 141   2              key_flag = 1;
+ 142   2          }
+ 143   1      
+ 144   1          if (i % LED_TIME == 0)
+ 145   1          {
+ 146   2              led_flag = 1;
+ 147   2          }
+ 148   1      
+ 149   1          if (i % 1000 == 0)
+ 150   1          {
+ 151   2              ne555_flag = 1;
+ 152   2          }
+ 153   1      
+ 154   1      
+ 155   1      }
+ 156          
+ 157          
+ 158          
+ 159          void timer0() interrupt 1
+ 160          {
+ 161   1          static uchar i;
+ 162   1      
+ 163   1          switch (state)
+ 164   1          {
+ 165   2              case 0:
+ 166   2              {
+ 167   3                  times++;
+ 168   3                  if (times > 30000)
+ 169   3                  {
+ 170   4                      times = 0;
+ 171   4                      times1++;
+ 172   4                  }
+ 173   3              }
+ 174   2              break;
+ 175   2      
+ 176   2              case 1:
+C51 COMPILER V9.60.7.0   MAIN                                                              02/24/2025 20:57:13 PAGE 4   
+
+ 177   2              {
+ 178   3                  i = (i + 1) % 100
+ 179   3                  if (i > percent)
+ 180   3                  {
+ 181   4                      pwm_flag = 1;
+ 182   4                  }
+ 183   3                  else
+ 184   3                  {
+ 185   4                      pwm_flag = 0;
+ 186   4                  }
+ 187   3              }
+ 188   2              break;
+ 189   2          }
+ 190   1      }
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  1 ERROR(S)

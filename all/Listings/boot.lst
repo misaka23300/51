@@ -1,0 +1,144 @@
+C51 COMPILER V9.60.7.0   BOOT                                                              02/24/2025 20:57:13 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE BOOT
+OBJECT MODULE PLACED IN .\Objects\boot.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE boot.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\boot
+                    -.lst) TABS(2) OBJECT(.\Objects\boot.obj)
+
+line level    source
+
+   1          #include "boot.h"
+   2          
+   3          void boot_init()
+   4          {
+   5   1          P0M0 = 0x00; P0M1 = 0x00; 
+   6   1          P1M0 = 0x00; P1M1 = 0x00; 
+   7   1          P2M0 = 0x00; P2M1 = 0x00; 
+   8   1          P3M0 = 0x00; P3M1 = 0x00; 
+   9   1          P4M0 = 0x00; P4M1 = 0x00; 
+  10   1          P5M0 = 0x00; P5M1 = 0x00; 
+  11   1          P6M0 = 0x00; P6M1 = 0x00; 
+  12   1          P7M0 = 0x00; P7M1 = 0x00; 
+  13   1      
+  14   1      
+  15   1          P0 = 0xFF;
+  16   1          batch(4);
+  17   1      
+  18   1          batch(6);
+  19   1          batch(7);
+  20   1      
+  21   1          batch(0);
+  22   1      
+  23   1          // 1010 1111
+  24   1          P0 = 0xAF;
+  25   1          batch(5);
+  26   1          batch(0);
+  27   1      
+  28   1          timer();
+  29   1      
+  30   1      
+  31   1      }
+  32          
+  33          void timer()
+  34          {
+  35   1          // T0 -> NE555
+  36   1          // T0 -> sonic
+  37   1          // T0 -> 
+  38   1      
+  39   1          // T1 -> 1ms
+  40   1          Timer1_Init();
+  41   1          EA = 1;
+  42   1      }
+  43          
+  44          
+  45          
+  46          void Timer1_Init()    //1毫秒@12.000MHz
+  47          {
+  48   1        AUXR &= 0xBF;     //定时器时钟12T模式
+  49   1        TMOD &= 0x0F;     //设置定时器模式
+  50   1        TL1 = 0x18;       //设置定时初始值
+  51   1        TH1 = 0xFC;       //设置定时初始值
+  52   1        TF1 = 0;        //清除TF1标志
+  53   1        TR1 = 1;        //定时器1开始计时
+  54   1        ET1 = 1;        //使能定时器1中断
+C51 COMPILER V9.60.7.0   BOOT                                                              02/24/2025 20:57:13 PAGE 2   
+
+  55   1      }
+  56          
+  57          
+  58          void batch(uchar i)
+  59          {
+  60   1          switch (i)
+  61   1          {
+  62   2              case 0: {P2 = P2 & 0x1F; break; }
+  63   2              case 4: {P2 = (P2 & 0x1F) | 0x80; break; }
+  64   2              case 5: {P2 = (P2 & 0x1F) | 0xA0; break; }
+  65   2              case 6: {P2 = (P2 & 0x1F) | 0xC0; break; }
+  66   2              case 7: {P2 = (P2 & 0x1F) | 0xE0; break; }
+  67   2          }
+  68   1      
+  69   1      }
+  70          
+  71          void ne555_timer_0()
+  72          {
+  73   1          // 计数器
+  74   1          // 12T
+  75   1          // 8位自动装载
+  76   1      
+  77   1          // 1xxx xxxx
+  78   1          AUXR |= 0x8F;
+  79   1      
+  80   1          // xxxx 0110
+  81   1          TMOD = (TMOD & 0xF0) | 0x06 ;
+  82   1          TL0 = 0xFF;
+  83   1          TH0 = 0xFF;
+  84   1      
+  85   1          TR0 = 0;
+  86   1          TF0 = 0;
+  87   1      
+  88   1          ET0 = 1;
+  89   1      }
+  90          
+  91          
+  92          void pwm_timer_0()   //10微秒@12.000MHz
+  93          {
+  94   1          // 10ms
+  95   1          AUXR &= 0x7F;     //定时器时钟12T模式
+  96   1        TMOD &= 0xF0;     //设置定时器模式
+  97   1        TL0 = 0xF6;       //设置定时初始值
+  98   1        TH0 = 0xFF;       //设置定时初始值
+  99   1        TF0 = 0;        //清除TF0标志
+ 100   1        TR0 = 1;        //定时器0开始计时
+ 101   1        ET0 = 1;        //使能定时器0中断
+ 102   1      
+ 103   1      }
+ 104          
+ 105          void sonic_timer_0()
+ 106          {
+ 107   1          AUXR &= 0x7F;     //定时器时钟12T模式
+ 108   1        TMOD &= 0xF0;     //设置定时器模式
+ 109   1        TL0 = 0x00;       //设置定时初始值
+ 110   1        TH0 = 0x00;       //设置定时初始值
+ 111   1        TF0 = 0;        //清除TF0标志
+ 112   1        TR0 = 0;        //定时器0开始计时
+ 113   1        ET0 = 1;        //使能定时器0中断
+ 114   1      }
+ 115          
+ 116          
+C51 COMPILER V9.60.7.0   BOOT                                                              02/24/2025 20:57:13 PAGE 3   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    216    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
