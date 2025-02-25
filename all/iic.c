@@ -1,8 +1,7 @@
-/*	#   I2C代码片段说明
-	1. 	本文件夹中提供的驱动代码供参赛选手完成程序设计参考。
-	2. 	参赛选手可以自行编写相关代码或以该代码为基础，根据所选单片机类型、运行速度和试题
-		中对单片机时钟频率的要求，进行代码调试和修改。
-*/
+#include "iic.h"
+
+sbit scl = P2 ^ 0;
+sbit sda = P2 ^ 1;
 
 #define DELAY_TIME	10
 
@@ -106,3 +105,84 @@ void I2CSendAck(unsigned char ackbit)
 	I2C_Delay(DELAY_TIME);
 }
 
+
+uchar ADC_pcf8591(uchar channel)
+{
+    uchar byte;
+    I2CStart();
+
+    I2CSendByte(0x90);
+    I2CWaitAck();
+
+    I2CSendByte(channel);
+    I2CWaitAck();
+
+    I2CStart();
+
+    I2CSendByte(0x91);
+    I2CWaitAck();
+
+    byte = I2CReceiveByte();
+    I2CSendAck(1);
+
+    I2CStop();
+    return byte;
+}
+
+void DA_pcf8591(uchar byte)
+{
+    I2CStart();
+
+    I2CSendByte(0x90);
+    I2CwaitAck();
+
+    I2CSendByte(0x43);
+    I2CWaitAck();
+
+    I2CSendByte(byte);
+    I2CWaitAck();
+
+    I2CStop();
+}
+
+void at2402_write(uchar address,uchar byte)
+{
+    I2CStart();
+
+    I2CSendByte(0xA0);
+    I2CWaitAck();
+
+    I2CSendByte(address);
+    I2CWaitAck();
+m
+    I2CsendByte(byte);
+    I2CWaitAck();
+
+    I2CStop();
+    Delay5us();
+}
+
+uchar at2402_read(uchar address)
+{
+    uchar byte;
+    I2CStart();
+
+    I2CSendByte(0xA0);
+    I2CWaitAck();
+
+    I2CSendByte(address);
+    I2CWaitAck();
+
+    I2CStart();
+
+    I2CSendByte(0xA1);
+    I2CWaitAck();
+
+    byte = I2CReceiveByte();
+    I2CSendAck();
+
+    I2CStop();
+    delay5us();
+
+    return byte;
+}
