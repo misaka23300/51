@@ -8,7 +8,7 @@
 #define uint unsigned int
 
 void boot_init();
-void batch();
-
+void batch(uchar i);
+void Timer2_Init();
 
 #endif

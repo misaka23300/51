@@ -1,0 +1,113 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2025 21:33:51 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main
+                    -.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "main.h"
+   2          
+   3          #define LED_TIME 10
+   4          #define KEY_TIME 5
+   5          #define READ_TIME 750
+   6          extern uchar seg[8];
+   7          extern uchar led[8];
+   8          extern uchar now_time[7];
+   9          
+  10          uchar one_tag = 99;
+  11          uchar press, state;
+  12          bit led_flag, key_flag, read_time_flag;
+  13          void main()
+  14          {
+  15   1          boot_init();
+  16   1          init_time();
+  17   1          
+  18   1      
+  19   1          while (1)
+  20   1          {
+  21   2              if (led_flag)
+  22   2              {
+  23   3                  led_display();
+  24   3                  led_flag = 0;
+  25   3              }
+  26   2      
+  27   2              if (key_flag)
+  28   2              {
+  29   3                  press = key_scan();
+  30   3                  key_flag = 0;
+  31   3              }
+  32   2      
+  33   2              if (read_time_flag)
+  34   2              {
+  35   3                  read_time();
+  36   3                  read_time_flag = 0;
+  37   3              }
+  38   2      
+  39   2              switch (state)
+  40   2              {
+  41   3                  // 时间
+  42   3                  
+  43   3                  case 0:
+  44   3                  {
+  45   4                      if (one_tag != 0)
+  46   4                      {
+  47   5                          one_tag = 0;
+  48   5                          seg[2] = 17;
+  49   5                          seg[5] = 17;
+  50   5                      }
+  51   4                      seg[0] = now_time[2] / 10;
+  52   4                      seg[1] = now_time[2] % 10;
+  53   4      
+  54   4                      seg[3] = now_time[1] / 10;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/26/2025 21:33:51 PAGE 2   
+
+  55   4                      seg[4] = now_time[1] % 10;
+  56   4      
+  57   4                      seg[6] = now_time[0] / 10;
+  58   4                      seg[7] = now_time[0] % 10;
+  59   4                  }
+  60   3                  break;
+  61   3              }
+  62   2          }
+  63   1      }
+  64          
+  65          void Timer2_Isr(void) interrupt 12
+  66          {
+  67   1          static uchar i;
+  68   1          i = (i + 1) % 8;
+  69   1          
+  70   1          seg_display();
+  71   1      
+  72   1          if (i % LED_TIME == 0)
+  73   1          {
+  74   2              led_flag = 1;
+  75   2          }
+  76   1      
+  77   1          if (i % KEY_TIME == 0)
+  78   1          {
+  79   2              key_flag = 1;
+  80   2          }
+  81   1      
+  82   1          if (i % READ_TIME == 0)
+  83   1          {
+  84   2              read_time_flag = 1;
+  85   2          }
+  86   1      }
+  87          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    209    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

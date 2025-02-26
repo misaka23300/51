@@ -9,7 +9,7 @@ sbit RST = P1^3;
 uchar write_address[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C};
 uchar read_address[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8B, 0x8D};
 
-uchar send_time[7] = {0, 0, 0, 0, 0, 0, 0};
+uchar send_time[7] = {45, 23, 7, 21, 7, 5, 25};
 uchar now_time[7] = {0, 0, 0, 0, 0, 0, 0};
 
 void Write_Ds1302(unsigned  char temp) 

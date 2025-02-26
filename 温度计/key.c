@@ -3,7 +3,7 @@
 uchar key_scan()
 {
     static uchar value, state, i;
-    uchar press = 0xFF; tmp = 99;
+    uchar press = 0xFF, tmp = 99;
 
     P3 = 0x0F;
     P42 = 0; P44 = 0;
