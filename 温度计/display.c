@@ -47,7 +47,7 @@ void sandy(uchar i,bit state)
     }
 
     if (last != tmp){
-        P0 = ~tmp;
+        P0 = tmp;
         batch(5);
         batch(0);
 
