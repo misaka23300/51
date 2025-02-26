@@ -8,7 +8,7 @@ sbit RST = P1^3;
 // 秒 分 时 日 月 星期 年
 uchar write_address[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C};
 uchar read_address[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8B, 0x8D};
-uchar init_time[7] = {0, 0, 0, 0, 0, 0, 0};
+uchar send_time[7] = {0, 0, 0, 0, 0, 0, 0};
 uchar now_time[7] = {0, 0, 0, 0, 0, 0, 0};
 
 void Write_Ds1302(unsigned  char temp) 
@@ -74,7 +74,7 @@ uchar  BCD_to_hex(uchar BCD)
 }
 
 
-void write_time()
+void init_time()
 {
 	uchar i;
 
@@ -96,16 +96,22 @@ void read_time()
 	
 	for (i = 0;i < 7;i++)
 	{
-		init_time[i] = Read_Ds1302_Byte(read_address[i]);
+		now_time[i] = Read_Ds1302_Byte(read_address[i]);
 	}
 
 	for (i = 0;i < 7;i++)
 	{
-		init_time[i] = BCD_to_hex(init_time[i]);
+		now_time[i] = BCD_to_hex(now_time[i]);
 	}
 }
 
-
+void write_time(uchar* time)
+{	
+	uchar i;
+	for (i = 0;i < 7;i++)
+		send_time[i] = hex_to_BCD(time[i]);
+	init_time();
+}
 
 
 
