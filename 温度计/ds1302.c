@@ -1,10 +1,15 @@
 #include "ds1302.h"
 
+sbit SCK = P1^7;
+sbit SDA = P2^3;
+sbit RST = P1^3;
+
+
 // 秒 分 时 日 月 星期 年
 uchar write_address[7] = {0x80, 0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C};
 uchar read_address[7] = {0x81, 0x83, 0x85, 0x87, 0x89, 0x8B, 0x8D};
-uchar time[7] = {};
-
+uchar init_time[7] = {0, 0, 0, 0, 0, 0, 0};
+uchar now_time[7] = {0, 0, 0, 0, 0, 0, 0};
 
 void Write_Ds1302(unsigned  char temp) 
 {
@@ -78,7 +83,7 @@ void write_time()
 
 	for (i = 0; i < 7;i++)
 	{
-		Write_Ds1302_Byte(write_address[i], hex_to_BCD(time[i]));
+		Write_Ds1302_Byte(write_address[i], init_time[i]);
 	}
 
 	Write_Ds1302_Byte(0x8E, 0x80);
@@ -88,33 +93,19 @@ void write_time()
 void read_time()
 {
 	uchar i;
-	uchar time[8];
-	Write_Ds1302_Byte(0x8E;0x00);
+	
+	for (i = 0;i < 7;i++)
+	{
+		init_time[i] = Read_Ds1302_Byte(read_address[i]);
+	}
 
 	for (i = 0;i < 7;i++)
 	{
-		time[i] = Read_Ds1302_Byte(read_address[i])
+		init_time[i] = BCD_to_hex(init_time[i]);
 	}
-
-	Write_Ds1302_Byte(0x8E;0x80);
-
-	return time;
 }
 
 
-uchar hex_to_BCD(uchar HEX)
-{
-	uchar BCD;
-	BCD = ( (HEX / 10) << 4) + (HEX % 10);
-	return BCD;
-}
-
-uchar BCD_to_hex(uchar BCD)
-{
-	uchar HEX;
-	HEX = ( (BCD >> 4) * 10 ) + (BCD & 0x0F);
-	return HEX;
-}
 
 
 
