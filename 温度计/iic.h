@@ -3,7 +3,9 @@
 
 #include "boot.h"
 
-ovid pcf8591_write(uchar address, uchar data_);
-uchar pcf8591_read(uchar address);
+void pcf8591_write(uchar address, uchar data_);
+
+uchar pcf8591_ADC(uchar channel);
+void pcf8591_DA(uchar v);
 
 #endif

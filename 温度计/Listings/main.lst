@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 13:13:39 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 19:44:14 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -13,269 +13,350 @@ line level    source
    3          #define LED_TIME 10
    4          #define KEY_TIME 5
    5          #define READ_TIME 750
-   6          extern uchar seg[8];
-   7          extern uchar led[8];
-   8          extern uchar now_time[7];
-   9          
-  10          char set_time[7] = {0, 0, 0, 0, 0, 0, 0};
-  11          
-  12          uchar one_tag = 99;
-  13          uchar press, state;
-  14          bit led_flag, key_flag, read_time_flag, set_time_flag;
+   6          #define ADC_TIME 1000
+   7          #define TEMP_TIME 1000
+   8          
+   9          extern uchar seg[8];
+  10          extern uchar led[8];
+  11          extern uchar now_time[7];
+  12          
+  13          char set_time[7] = {0, 0, 0, 0, 0, 0, 0};
+  14          uchar adc[3] = {0, 0, 0};
   15          
-  16          char set_time_config;
-  17          
-  18          void main()
-  19          {
-  20   1          uchar i;
-  21   1        
-  22   1          boot_init();
-  23   1          init_time();
-  24   1          
-  25   1      
-  26   1          while (1)
-  27   1          {
-  28   2              if (led_flag)
-  29   2              {
-  30   3                  led_display();
-  31   3                  led_flag = 0;
-  32   3              }
-  33   2      
-  34   2              if (key_flag)
+  16          uchar one_tag = 99;
+  17          uchar press, state;
+  18          uchar v;
+  19          bit led_flag, key_flag, read_time_flag, set_time_flag, adc_flag, temp_flag;
+  20          uint temperature;
+  21          char set_time_config;
+  22          
+  23          void main()
+  24          {
+  25   1          uchar i, k;
+  26   1        
+  27   1          boot_init();
+  28   1          init_time();
+  29   1          read_temp();
+  30   1      
+  31   1      
+  32   1          while (1)
+  33   1          {
+  34   2              if (led_flag)
   35   2              {
-  36   3                  press = key_scan();
-  37   3                  key_flag = 0;
-  38   3      
-  39   3                  if (press == 4)
-  40   3                  {
-  41   4                      state = 1;
-  42   4                  }
-  43   3      
-  44   3                  if (press == 7)
-  45   3                  {
-  46   4                      state = (state + 1) % 3;
-  47   4                  }
-  48   3      
-  49   3                  if (state == 1)
-  50   3                  {
-  51   4                      switch (press)
-  52   4                      {
-  53   5                          case 9:
-  54   5                          {
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 13:13:39 PAGE 2   
+  36   3                  led_display();
+  37   3                  led_flag = 0;
+  38   3              }
+  39   2      
+  40   2              if (key_flag)
+  41   2              {
+  42   3                  press = key_scan();
+  43   3                  key_flag = 0;
+  44   3      
+  45   3                  if (press == 4)
+  46   3                  {
+  47   4                      state = 1;
+  48   4                  }
+  49   3      
+  50   3                  if (press == 7)
+  51   3                  {
+  52   4                      state = (state + 1) % 4;
+  53   4                  }
+  54   3      
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 19:44:14 PAGE 2   
 
-  55   6                              set_time_config = (set_time_config + 1) % 3;
-  56   6                          }
-  57   5                          break;
-  58   5      
-  59   5                          case 17:
+  55   3                  if (state == 1)
+  56   3                  {
+  57   4                      switch (press)
+  58   4                      {
+  59   5                          case 9:
   60   5                          {
-  61   6                              set_time_config--;
-  62   6                              if (set_time_config == -1)
-  63   6                              {
-  64   7                                  set_time_config = 2;
-  65   7                              }
-  66   6                          }
-  67   5                          break;
-  68   5      
-  69   5                          case 14:
-  70   5                          {
-  71   6                              if (set_time_config == 2)
-  72   6                              {
-  73   7                                  set_time[set_time_config] = (set_time[set_time_config] + 1) % 24;
-  74   7                              }
-  75   6                              else
-  76   6                              {
-  77   7                                  set_time[set_time_config] = (set_time[set_time_config] + 1) % 60;
-  78   7                              }
-  79   6                              
-  80   6                          }
-  81   5                          break;
-  82   5      
-  83   5                          case 12:
-  84   5                          {
-  85   6                              set_time[set_time_config] = (set_time[set_time_config] - 1);
-  86   6      
-  87   6                              if (set_time[set_time_config] == -1)
-  88   6                              {
-  89   7                                  if (set_time_config == 2)
-  90   7                                      set_time[set_time_config] = 23;
-  91   7                                  else
-  92   7                                  {
-  93   8                                      set_time[set_time_config] = 59;
-  94   8                                  }
-  95   7                              }
-  96   6                          }
-  97   5                          break; 
-  98   5      
-  99   5                          case 13:
- 100   5                          {
- 101   6                              write_time(set_time);
- 102   6                              read_time();
- 103   6                              state = 0;
- 104   6                          }
- 105   5                          break;
- 106   5      
- 107   5                          case 33:
- 108   5                          {
+  61   6                              set_time_config = (set_time_config + 1) % 3;
+  62   6                          }
+  63   5                          break;
+  64   5      
+  65   5                          case 17:
+  66   5                          {
+  67   6                              set_time_config--;
+  68   6                              if (set_time_config == -1)
+  69   6                              {
+  70   7                                  set_time_config = 2;
+  71   7                              }
+  72   6                          }
+  73   5                          break;
+  74   5      
+  75   5                          case 14:
+  76   5                          {
+  77   6                              if (set_time_config == 2)
+  78   6                              {
+  79   7                                  set_time[set_time_config] = (set_time[set_time_config] + 1) % 24;
+  80   7                              }
+  81   6                              else
+  82   6                              {
+  83   7                                  set_time[set_time_config] = (set_time[set_time_config] + 1) % 60;
+  84   7                              }
+  85   6                              
+  86   6                          }
+  87   5                          break;
+  88   5      
+  89   5                          case 12:
+  90   5                          {
+  91   6                              set_time[set_time_config] = (set_time[set_time_config] - 1);
+  92   6      
+  93   6                              if (set_time[set_time_config] == -1)
+  94   6                              {
+  95   7                                  if (set_time_config == 2)
+  96   7                                      set_time[set_time_config] = 23;
+  97   7                                  else
+  98   7                                  {
+  99   8                                      set_time[set_time_config] = 59;
+ 100   8                                  }
+ 101   7                              }
+ 102   6                          }
+ 103   5                          break; 
+ 104   5      
+ 105   5                          case 13:
+ 106   5                          {   
+ 107   6                              write_time(set_time);
+ 108   6                              read_time();
  109   6                              state = 0;
- 110   6                          }
- 111   5                      }
- 112   4                  }
- 113   3      
- 114   3                 
- 115   3              }
- 116   2      
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 13:13:39 PAGE 3   
+ 110   6                              set_time_config = 0;
+ 111   6                          }
+ 112   5                          break;
+ 113   5      
+ 114   5                          case 33:
+ 115   5                          {
+ 116   6                              state = 0;
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 19:44:14 PAGE 3   
 
- 117   2              if (read_time_flag)
- 118   2              {
- 119   3                  read_time();
- 120   3                  read_time_flag = 0;
- 121   3              }
- 122   2      
- 123   2              switch (state)
- 124   2              {
- 125   3                  // 时间
- 126   3                  
- 127   3                  case 0:
- 128   3                  {
- 129   4                      if (one_tag != 0)
- 130   4                      {
- 131   5                          one_tag = 0;
- 132   5                          seg[2] = 17;
- 133   5                          seg[5] = 17;
- 134   5                      }
- 135   4                      seg[0] = now_time[2] / 10;
- 136   4                      seg[1] = now_time[2] % 10;
- 137   4      
- 138   4                      seg[3] = now_time[1] / 10;
- 139   4                      seg[4] = now_time[1] % 10;
- 140   4      
- 141   4                      seg[6] = now_time[0] / 10;
- 142   4                      seg[7] = now_time[0] % 10;
- 143   4                  }
- 144   3                  break;
- 145   3      
- 146   3                  case 1:
- 147   3                  {
- 148   4                      if (one_tag != 1)
- 149   4                      {
- 150   5                          one_tag = 1;
- 151   5                          seg[2] = 17;
- 152   5                          seg[5] = 17;
- 153   5      
- 154   5                          
- 155   5                          for (i = 0;i <7;i++)
- 156   5                          {
- 157   6                              set_time[i] = now_time[i];
- 158   6                          }
- 159   5                      }
- 160   4      
- 161   4                      if (set_time_flag)
- 162   4                      {
- 163   5                          switch (set_time_config)
+ 117   6                              set_time_config = 0;
+ 118   6                          }
+ 119   5                      }
+ 120   4                  }
+ 121   3      
+ 122   3                 
+ 123   3              }
+ 124   2      
+ 125   2              if (read_time_flag)
+ 126   2              {
+ 127   3                  read_time();
+ 128   3                  read_time_flag = 0;
+ 129   3              }
+ 130   2      
+ 131   2              switch (state)
+ 132   2              {
+ 133   3                  // 时间
+ 134   3                  
+ 135   3                  case 0:
+ 136   3                  {
+ 137   4                      if (one_tag != 0)
+ 138   4                      {
+ 139   5                          one_tag = 0;
+ 140   5                          seg[2] = 17;
+ 141   5                          seg[5] = 17;
+ 142   5                      }
+ 143   4                      seg[0] = now_time[2] / 10;
+ 144   4                      seg[1] = now_time[2] % 10;
+ 145   4      
+ 146   4                      seg[3] = now_time[1] / 10;
+ 147   4                      seg[4] = now_time[1] % 10;
+ 148   4      
+ 149   4                      seg[6] = now_time[0] / 10;
+ 150   4                      seg[7] = now_time[0] % 10;
+ 151   4                  }
+ 152   3                  break;
+ 153   3      
+ 154   3                  case 1:
+ 155   3                  {
+ 156   4                      if (one_tag != 1)
+ 157   4                      {
+ 158   5                          one_tag = 1;
+ 159   5                          seg[2] = 17;
+ 160   5                          seg[5] = 17;
+ 161   5      
+ 162   5                          
+ 163   5                          for (i = 0;i <7;i++)
  164   5                          {
- 165   6                            /*  
- 166   6                              for (j = 0;j < 7;j++)
- 167   6                              {
- 168   6                                  seg[j] = 
- 169   6                              }
- 170   6                */
- 171   6                              case 0:
- 172   6                              {
- 173   7                                  // 秒
- 174   7                                  seg[6] = 16;
- 175   7                                  seg[7] = 16;
- 176   7                              }
- 177   6                              break;
- 178   6      
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 13:13:39 PAGE 4   
+ 165   6                              set_time[i] = now_time[i];
+ 166   6                          }
+ 167   5                      }
+ 168   4      
+ 169   4                      if (set_time_flag)
+ 170   4                      {
+ 171   5                          switch (set_time_config)
+ 172   5                          {
+ 173   6                              case 0:
+ 174   6                              {
+ 175   7                                  // 秒
+ 176   7                                  seg[6] = 16;
+ 177   7                                  seg[7] = 16;
+ 178   7                              }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 19:44:14 PAGE 4   
 
- 179   6                              case 1:
- 180   6                              {
- 181   7                                  // 分
- 182   7                                  seg[4] = 16;
- 183   7                                  seg[3] = 16;
- 184   7                              }
- 185   6                              break;
- 186   6      
- 187   6                              case 2:
- 188   6                              {
- 189   7                                  // 时
- 190   7                                  seg[1] = 16;
- 191   7                                  seg[0] = 16;
- 192   7                              }
- 193   6                          }
- 194   5                      }
- 195   4                      else
- 196   4                      {
- 197   5                          // 时
- 198   5                          seg[0] = set_time[2] / 10;
- 199   5                          seg[1] = set_time[2] % 10;
- 200   5                          // 分
- 201   5                          seg[3] = set_time[1] / 10;
- 202   5                          seg[4] = set_time[1] % 10;
- 203   5                          // 秒
- 204   5                          seg[6] = set_time[0] / 10;
- 205   5                          seg[7] = set_time[0] % 10;
- 206   5                      }
- 207   4                  }
- 208   3                  break;
- 209   3              }
- 210   2          }
- 211   1      }
- 212          
- 213          void Timer2_Isr(void) interrupt 12
- 214          {
- 215   1          static uchar i;
- 216   1          i = (i + 1) % 30000;
- 217   1          
- 218   1          seg_display();
- 219   1      
- 220   1          if (i % LED_TIME == 0)
- 221   1          {
- 222   2              led_flag = 1;
- 223   2          }
- 224   1      
- 225   1          if (i % KEY_TIME == 0)
- 226   1          {
- 227   2              key_flag = 1;
- 228   2          }
- 229   1      
- 230   1          if (i % READ_TIME == 0)
- 231   1          {
- 232   2              read_time_flag = 1;
- 233   2          }
- 234   1      
- 235   1          if (i % 5000 == 0)
- 236   1          {
- 237   2              if (set_time_flag)
- 238   2              {
- 239   3                  set_time_flag = 0;
- 240   3              }
-C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 13:13:39 PAGE 5   
+ 179   6                              break;
+ 180   6      
+ 181   6                              case 1:
+ 182   6                              {
+ 183   7                                  // 分
+ 184   7                                  seg[4] = 16;
+ 185   7                                  seg[3] = 16;
+ 186   7                              }
+ 187   6                              break;
+ 188   6      
+ 189   6                              case 2:
+ 190   6                              {
+ 191   7                                  // 时
+ 192   7                                  seg[1] = 16;
+ 193   7                                  seg[0] = 16;
+ 194   7                              }
+ 195   6                          }
+ 196   5                      }
+ 197   4                      else
+ 198   4                      {
+ 199   5                          // 时
+ 200   5                          seg[0] = set_time[2] / 10;
+ 201   5                          seg[1] = set_time[2] % 10;
+ 202   5                          // 分
+ 203   5                          seg[3] = set_time[1] / 10;
+ 204   5                          seg[4] = set_time[1] % 10;
+ 205   5                          // 秒
+ 206   5                          seg[6] = set_time[0] / 10;
+ 207   5                          seg[7] = set_time[0] % 10;
+ 208   5                      }
+ 209   4                  }
+ 210   3                  break;
+ 211   3      
+ 212   3                  case 2:
+ 213   3                  {
+ 214   4                      // pcf8591 ADC
+ 215   4                      if (adc_flag)
+ 216   4                      {
+ 217   5                          adc_flag = 0;
+ 218   5                       
+ 219   5                          if (one_tag != 2)
+ 220   5                          {
+ 221   6                              one_tag = 2;
+ 222   6                              seg[0] = 9;
+ 223   6                              seg[1] = 17;
+ 224   6                              seg[2] = 17;
+ 225   6                              seg[3] = 17;
+ 226   6                              seg[4] = 17;
+ 227   6                          }
+ 228   5                          v = pcf8591_ADC(0x01);
+ 229   5                                              
+ 230   5                          adc[0] = v / 100 % 10;
+ 231   5                          adc[1] = v / 10 % 10;
+ 232   5                          adc[2] = v % 10;
+ 233   5      
+ 234   5                          for (k = 0;k < 2;k++)
+ 235   5                          {
+ 236   6                              if (adc[k] == 0)
+ 237   6                              {
+ 238   7                                  adc[k] = 17;
+ 239   7                              }
+ 240   6                              else
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 19:44:14 PAGE 5   
 
- 241   2              else
- 242   2              {
- 243   3                  set_time_flag = 1;
- 244   3              }
- 245   2          }
- 246   1      
- 247   1      }
- 248          
- 249          
- 250          
+ 241   6                              {
+ 242   7                                  break;
+ 243   7                              }
+ 244   6                          }
+ 245   5      
+ 246   5                          seg[5] = adc[0];
+ 247   5                          seg[6] = adc[1];
+ 248   5                          seg[7] = adc[2];
+ 249   5                      }
+ 250   4                  }
+ 251   3                  break;
+ 252   3      
+ 253   3                  case 3:
+ 254   3                  {   
+ 255   4                      if (temp_flag)
+ 256   4                      {
+ 257   5                          temp_flag = 0;
+ 258   5                          if (one_tag != 3)
+ 259   5                          {
+ 260   6                              one_tag = 3;
+ 261   6      
+ 262   6                              seg[0] = 2;
+ 263   6                              seg[1] = 16;
+ 264   6                              seg[6] = 23;
+ 265   6                              seg[7] = 12;
+ 266   6      
+ 267   6                          }
+ 268   5                          temperature = (uint) (read_temp() * 100);
+ 269   5      
+ 270   5                          //seg[3] = temperature / 10000 % 10;
+ 271   5                          seg[2] = temperature / 1000 % 10;
+ 272   5                          seg[3] = (temperature / 100 % 10) + 32;
+ 273   5                          seg[4] = temperature / 10 % 10;
+ 274   5                          seg[5] = temperature % 10;
+ 275   5                      }
+ 276   4                  }
+ 277   3                      
+ 278   3              }
+ 279   2          }
+ 280   1      }
+ 281          
+ 282          void Timer2_Isr(void) interrupt 12
+ 283          {
+ 284   1          static uchar i;
+ 285   1          i = (i + 1) % 30000;
+ 286   1          
+ 287   1          seg_display();
+ 288   1      
+ 289   1          if (i % LED_TIME == 0)
+ 290   1          {
+ 291   2              led_flag = 1;
+ 292   2          }
+ 293   1      
+ 294   1          if (i % KEY_TIME == 0)
+ 295   1          {
+ 296   2              key_flag = 1;
+ 297   2          }
+ 298   1      
+ 299   1          if (i % READ_TIME == 0)
+ 300   1          {
+ 301   2              read_time_flag = 1;
+ 302   2          }
+C51 COMPILER V9.60.7.0   MAIN                                                              02/27/2025 19:44:14 PAGE 6   
+
+ 303   1      
+ 304   1          if (i % 5000 == 0)
+ 305   1          {
+ 306   2              if (set_time_flag)
+ 307   2              {
+ 308   3                  set_time_flag = 0;
+ 309   3              }
+ 310   2              else
+ 311   2              {
+ 312   3                  set_time_flag = 1;
+ 313   3              }
+ 314   2          }
+ 315   1      
+ 316   1          if (i % ADC_TIME == 0)
+ 317   1          {
+ 318   2              adc_flag = 1;
+ 319   2          }
+ 320   1      
+ 321   1          if (i % TEMP_TIME == 0)
+ 322   1          {
+ 323   2              temp_flag = 1;
+ 324   2          }
+ 325   1      
+ 326   1      }
+ 327          
+ 328          
+ 329          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    628    ----
+   CODE SIZE        =    882    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     12    ----
+   DATA SIZE        =     18    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =      4    ----
+   BIT SIZE         =      6    ----
 END OF MODULE INFORMATION.
 
 

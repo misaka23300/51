@@ -3,25 +3,31 @@
 #define LED_TIME 10
 #define KEY_TIME 5
 #define READ_TIME 750
+#define ADC_TIME 1000
+#define TEMP_TIME 1000
+
 extern uchar seg[8];
 extern uchar led[8];
 extern uchar now_time[7];
 
 char set_time[7] = {0, 0, 0, 0, 0, 0, 0};
+uchar adc[3] = {0, 0, 0};
 
 uchar one_tag = 99;
 uchar press, state;
-bit led_flag, key_flag, read_time_flag, set_time_flag;
-
+uchar v;
+bit led_flag, key_flag, read_time_flag, set_time_flag, adc_flag, temp_flag;
+uint temperature;
 char set_time_config;
 
 void main()
 {
-		uchar i;
+		uchar i, k;
 	
     boot_init();
     init_time();
-    
+    read_temp();
+
 
     while (1)
     {
@@ -43,7 +49,7 @@ void main()
 
             if (press == 7)
             {
-                state = (state + 1) % 3;
+                state = (state + 1) % 4;
             }
 
             if (state == 1)
@@ -97,16 +103,18 @@ void main()
                     break; 
 
                     case 13:
-                    {
+                    {   
                         write_time(set_time);
                         read_time();
                         state = 0;
+                        set_time_config = 0;
                     }
                     break;
 
                     case 33:
                     {
                         state = 0;
+                        set_time_config = 0;
                     }
                 }
             }
@@ -162,12 +170,6 @@ void main()
                 {
                     switch (set_time_config)
                     {
-                      /*  
-                        for (j = 0;j < 7;j++)
-                        {
-                            seg[j] = 
-                        }
-					*/
                         case 0:
                         {
                             // 秒
@@ -206,6 +208,73 @@ void main()
                 }
             }
             break;
+
+            case 2:
+            {
+                // pcf8591 ADC
+                if (adc_flag)
+                {
+                    adc_flag = 0;
+                 
+                    if (one_tag != 2)
+                    {
+                        one_tag = 2;
+                        seg[0] = 9;
+                        seg[1] = 17;
+                        seg[2] = 17;
+                        seg[3] = 17;
+                        seg[4] = 17;
+                    }
+                    v = pcf8591_ADC(0x01);
+                                        
+                    adc[0] = v / 100 % 10;
+                    adc[1] = v / 10 % 10;
+                    adc[2] = v % 10;
+
+                    for (k = 0;k < 2;k++)
+                    {
+                        if (adc[k] == 0)
+                        {
+                            adc[k] = 17;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    seg[5] = adc[0];
+                    seg[6] = adc[1];
+                    seg[7] = adc[2];
+                }
+            }
+            break;
+
+            case 3:
+            {   
+                if (temp_flag)
+                {
+                    temp_flag = 0;
+                    if (one_tag != 3)
+                    {
+                        one_tag = 3;
+
+                        seg[0] = 2;
+                        seg[1] = 16;
+                        seg[6] = 23;
+                        seg[7] = 12;
+
+                    }
+                    temperature = (uint) (read_temp() * 100);
+
+                    //seg[3] = temperature / 10000 % 10;
+                    seg[2] = temperature / 1000 % 10;
+                    seg[3] = (temperature / 100 % 10) + 32;
+                    seg[4] = temperature / 10 % 10;
+                    seg[5] = temperature % 10;
+                }
+            }
+                
         }
     }
 }
@@ -242,6 +311,16 @@ void Timer2_Isr(void) interrupt 12
         {
             set_time_flag = 1;
         }
+    }
+
+    if (i % ADC_TIME == 0)
+    {
+        adc_flag = 1;
+    }
+
+    if (i % TEMP_TIME == 0)
+    {
+        temp_flag = 1;
     }
 
 }
