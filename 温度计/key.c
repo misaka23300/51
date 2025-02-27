@@ -15,7 +15,8 @@ uchar key_scan()
     {
         case 0:
         {
-            if (press != 0x0F){
+            if (press != 0x0F)
+            {
                 state = 1;
             }
         }
@@ -23,10 +24,13 @@ uchar key_scan()
 
         case 1:
         {
-            if (press == 0x0F){
+            if (press == 0x0F)
+            {
                 state = 0;
-            }else{
-                P3 = press & 0xF0;
+            }
+            else
+            {
+                P3 = press | 0xF0;
                 P42 = 1; P44 = 1;
                 P36 = P42; P37 = P44;
             
@@ -64,14 +68,17 @@ uchar key_scan()
 
         case 2:
         {
-            if (press != 0x0F){
+            if (press != 0x0F)
+            {
                 i = (i + 1) % 255;
                 if (i >= 100)
                 {
                     state = 3;
                     i = 0;
                 }
-            }else{
+            }
+            else
+            {
                 state = 0;
                 tmp = value;
                 value = 0;
@@ -82,9 +89,10 @@ uchar key_scan()
 
         case 3:
         {
-            if (press == 0x0F){
+            if (press == 0x0F)
+            {
                 state = 0;
-                tmp = value;
+                tmp = value + 20;
                 value = 0;
             }
         }

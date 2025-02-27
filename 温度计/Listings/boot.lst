@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   BOOT                                                              02/26/2025 21:33:51 PAGE 1   
+C51 COMPILER V9.60.7.0   BOOT                                                              02/27/2025 13:13:39 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE BOOT
@@ -62,7 +62,7 @@ line level    source
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    152    ----
-C51 COMPILER V9.60.7.0   BOOT                                                              02/26/2025 21:33:51 PAGE 2   
+C51 COMPILER V9.60.7.0   BOOT                                                              02/27/2025 13:13:39 PAGE 2   
 
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
