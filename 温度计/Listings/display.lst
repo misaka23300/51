@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   DISPLAY                                                           02/27/2025 21:00:53 PAGE 1   
+C51 COMPILER V9.60.7.0   DISPLAY                                                           02/27/2025 21:38:57 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE DISPLAY
@@ -62,7 +62,7 @@ line level    source
   51   1      
   52   1          if (last != tmp){
   53   2              P0 = tmp;
-C51 COMPILER V9.60.7.0   DISPLAY                                                           02/27/2025 21:00:53 PAGE 2   
+C51 COMPILER V9.60.7.0   DISPLAY                                                           02/27/2025 21:38:57 PAGE 2   
 
   54   2              batch(5);
   55   2              batch(0);

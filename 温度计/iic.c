@@ -4,7 +4,6 @@ sbit scl = P2 ^ 0;
 sbit sda = P2 ^ 1;
 
 
-
 //
 #define DELAY_TIME	5
 
@@ -167,7 +166,7 @@ void at2402_write(uchar address,uchar Data)
     Delay15ms();
 }
 
-
+/*
 //0-255 0x00 0xff
 void AT24C02_Write(uchar *dat,uchar addr,uchar num)    //1.数据 2.地址 3.多少个数据
 {
@@ -184,10 +183,7 @@ void AT24C02_Write(uchar *dat,uchar addr,uchar num)    //1.数据 2.地址 3.多
 		I2CSendByte(*dat++);
 		I2CWaitAck();
 
-		I2C_Delay(200);
-	}
-	I2CStop();
-	Delay15ms();
+		I2C_Delay(200);Delay15ms();
 }
 
 void AT24C02_Read(uchar *dat,uchar addr,uchar num)
@@ -215,7 +211,7 @@ void AT24C02_Read(uchar *dat,uchar addr,uchar num)
 	}
 	I2CStop();
 }
-
+*/
 uchar pcf8591_ADC(uchar channel)
 {
     uchar adc;

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:00:53 PAGE 1   
+C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:38:57 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE IIC
@@ -62,7 +62,7 @@ line level    source
   52   1        I2C_Delay(DELAY_TIME);
   53   1          sda = 1;
   54   1        I2C_Delay(DELAY_TIME);
-C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:00:53 PAGE 2   
+C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:38:57 PAGE 2   
 
   55   1      }
   56          
@@ -126,7 +126,7 @@ line level    source
  114   1          scl = 0;
  115   1          sda = ackbit; 
  116   1        I2C_Delay(DELAY_TIME);
-C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:00:53 PAGE 3   
+C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:38:57 PAGE 3   
 
  117   1          scl = 1;
  118   1        I2C_Delay(DELAY_TIME);
@@ -181,108 +181,105 @@ line level    source
  167   1          Delay15ms();
  168   1      }
  169          
- 170          
+ 170          /*
  171          //0-255 0x00 0xff
  172          void AT24C02_Write(uchar *dat,uchar addr,uchar num)    //1.数据 2.地址 3.多少个数据
  173          {
- 174   1        I2CStart();
- 175   1      
- 176   1        I2CSendByte(0xa0);
- 177   1        I2CWaitAck();
- 178   1      
-C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:00:53 PAGE 4   
+ 174            I2CStart();
+ 175          
+ 176            I2CSendByte(0xa0);
+ 177            I2CWaitAck();
+ 178          
+C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:38:57 PAGE 4   
 
- 179   1        I2CSendByte(addr);
- 180   1        I2CWaitAck();
- 181   1      
- 182   1        while(num--)
- 183   1        {
- 184   2          I2CSendByte(*dat++);
- 185   2          I2CWaitAck();
- 186   2      
- 187   2          I2C_Delay(200);
- 188   2        }
- 189   1        I2CStop();
- 190   1        Delay15ms();
- 191   1      }
- 192          
- 193          void AT24C02_Read(uchar *dat,uchar addr,uchar num)
- 194          {
- 195   1        I2CStart();
- 196   1      
- 197   1        I2CSendByte(0xa0);
- 198   1        I2CWaitAck();
- 199   1      
- 200   1        I2CSendByte(addr);
- 201   1        I2CWaitAck();
- 202   1        
- 203   1        I2CStart();
- 204   1      
- 205   1        I2CSendByte(0xa1);
- 206   1        I2CWaitAck();
- 207   1      
- 208   1        while(num--)
- 209   1        {
- 210   2          *dat++=I2CReceiveByte();
- 211   2          if(num)
- 212   2                  I2CSendAck(0);
- 213   2          else 
- 214   2                  I2CSendAck(1);
- 215   2        }
- 216   1        I2CStop();
- 217   1      }
- 218          
- 219          uchar pcf8591_ADC(uchar channel)
- 220          {
- 221   1          uchar adc;
- 222   1      
- 223   1          I2CStart();
+ 179            I2CSendByte(addr);
+ 180            I2CWaitAck();
+ 181          
+ 182            while(num--)
+ 183            {
+ 184              I2CSendByte(*dat++);
+ 185              I2CWaitAck();
+ 186          
+ 187              I2C_Delay(200);Delay15ms();
+ 188          }
+ 189          
+ 190          void AT24C02_Read(uchar *dat,uchar addr,uchar num)
+ 191          {
+ 192            I2CStart();
+ 193          
+ 194            I2CSendByte(0xa0);
+ 195            I2CWaitAck();
+ 196          
+ 197            I2CSendByte(addr);
+ 198            I2CWaitAck();
+ 199            
+ 200            I2CStart();
+ 201          
+ 202            I2CSendByte(0xa1);
+ 203            I2CWaitAck();
+ 204          
+ 205            while(num--)
+ 206            {
+ 207              *dat++=I2CReceiveByte();
+ 208              if(num)
+ 209                      I2CSendAck(0);
+ 210              else 
+ 211                      I2CSendAck(1);
+ 212            }
+ 213            I2CStop();
+ 214          }
+ 215          */
+ 216          uchar pcf8591_ADC(uchar channel)
+ 217          {
+ 218   1          uchar adc;
+ 219   1      
+ 220   1          I2CStart();
+ 221   1      
+ 222   1          I2CSendByte(0x90);
+ 223   1          I2CWaitAck();
  224   1      
- 225   1          I2CSendByte(0x90);
+ 225   1          I2CSendByte(channel);
  226   1          I2CWaitAck();
  227   1      
- 228   1          I2CSendByte(channel);
- 229   1          I2CWaitAck();
- 230   1      
- 231   1          I2CStart();
+ 228   1          I2CStart();
+ 229   1      
+ 230   1          I2CSendByte(0x91);
+ 231   1          I2CWaitAck();
  232   1      
- 233   1          I2CSendByte(0x91);
- 234   1          I2CWaitAck();
+ 233   1          adc = I2CReceiveByte();
+ 234   1          I2CSendAck(1);
  235   1      
- 236   1          adc = I2CReceiveByte();
- 237   1          I2CSendAck(1);
- 238   1      
- 239   1          I2CStop();
- 240   1      
-C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:00:53 PAGE 5   
+ 236   1          I2CStop();
+ 237   1      
+ 238   1          return adc;
+ 239   1      }
+ 240          
+C51 COMPILER V9.60.7.0   IIC                                                               02/27/2025 21:38:57 PAGE 5   
 
- 241   1          return adc;
- 242   1      }
- 243          
- 244          void pcf8591_DA(uchar v)
- 245          {
- 246   1          I2CStart();
+ 241          void pcf8591_DA(uchar v)
+ 242          {
+ 243   1          I2CStart();
+ 244   1      
+ 245   1          I2CSendByte(0x91);
+ 246   1          I2CWaitAck();
  247   1      
- 248   1          I2CSendByte(0x91);
+ 248   1          I2CSendByte(0x40);
  249   1          I2CWaitAck();
  250   1      
- 251   1          I2CSendByte(0x40);
+ 251   1          I2CSendByte(v);
  252   1          I2CWaitAck();
  253   1      
- 254   1          I2CSendByte(v);
- 255   1          I2CWaitAck();
- 256   1      
- 257   1          I2CStop();
- 258   1      
- 259   1      }
+ 254   1          I2CStop();
+ 255   1      
+ 256   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    417    ----
+   CODE SIZE        =    296    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----      10
+   DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

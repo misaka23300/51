@@ -15,7 +15,7 @@ char set_time[7] = {0, 0, 0, 0, 0, 0, 0};
 uchar adc[3] = {0, 0, 0};
 
 uchar one_tag = 99;
-uchar press, state;
+uchar press, state, Data;
 uchar v;
 bit led_flag, key_flag, read_time_flag, set_time_flag, adc_flag, temp_flag;
 uint temperature;
@@ -23,13 +23,18 @@ char set_time_config;
 
 void main()
 {
-	uchar i, k;
+	uchar i, j, k;
 	
     boot_init();
-
-    send_time[0] = at2402_read(0x00);
-    send_time[1] = at2402_read(0x01);
-    send_time[2] = at2402_read(0x02);
+    
+    for (j = 0;j < 3;j++)
+    {
+        Data = at2402_read(j);
+        if (Data > 60)
+            send_time[j] = 55;
+        else
+            send_time[j] = Data;
+    }
 
     init_time();
     read_temp();
@@ -56,6 +61,18 @@ void main()
             else if (press == 7)
             {
                 state = (state + 1) % 4;
+            }
+
+            else if(press == 19)
+            {
+                led[7] = 1;
+                at2402_write(0x00, now_time[0]);
+                Delay500ms();
+                at2402_write(0x01, now_time[1]);
+                Delay500ms();
+                at2402_write(0x02, now_time[2]);
+                Delay500ms();
+                //led[7] = 0;
             }
 
             else if (state == 20)
@@ -111,12 +128,8 @@ void main()
                     case 13:
                     {   
                         write_time(set_time);
-
-                        at2402_write(0x00, set_time[0]);
-                        at2402_write(0x01, set_time[1]);
-                        at2402_write(0x02, set_time[2]);
-
                         read_time();
+
                         state = 0;
                         set_time_config = 0;
                         

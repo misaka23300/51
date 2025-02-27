@@ -10,5 +10,6 @@
 void boot_init();
 void batch(uchar i);
 void Timer2_Init();
+void Delay500ms();
 
 #endif
