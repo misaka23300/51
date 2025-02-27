@@ -9,6 +9,7 @@
 extern uchar seg[8];
 extern uchar led[8];
 extern uchar now_time[7];
+extern uchar send_time[7];
 
 char set_time[7] = {0, 0, 0, 0, 0, 0, 0};
 uchar adc[3] = {0, 0, 0};
@@ -22,9 +23,14 @@ char set_time_config;
 
 void main()
 {
-		uchar i, k;
+	uchar i, k;
 	
     boot_init();
+
+    send_time[0] = at2402_read(0x00);
+    send_time[1] = at2402_read(0x01);
+    send_time[2] = at2402_read(0x02);
+
     init_time();
     read_temp();
 
@@ -42,17 +48,17 @@ void main()
             press = key_scan();
             key_flag = 0;
 
-            if (press == 4)
+            if (press == 13 && state != 20)
             {
-                state = 1;
+                state = 20;
             }
 
-            if (press == 7)
+            else if (press == 7)
             {
                 state = (state + 1) % 4;
             }
 
-            if (state == 1)
+            else if (state == 20)
             {
                 switch (press)
                 {
@@ -105,9 +111,16 @@ void main()
                     case 13:
                     {   
                         write_time(set_time);
+
+                        at2402_write(0x00, set_time[0]);
+                        at2402_write(0x01, set_time[1]);
+                        at2402_write(0x02, set_time[2]);
+
                         read_time();
                         state = 0;
                         set_time_config = 0;
+                        
+                        
                     }
                     break;
 
@@ -135,8 +148,18 @@ void main()
             case 0:
             {
                 if (one_tag != 0)
-                {
+                {     
                     one_tag = 0;
+
+                    led[0] = 1;
+                    led[1] = 0;
+                    led[2] = 0;
+                    led[3] = 0;
+                    led[4] = 0;
+                    led[5] = 0;
+                    led[6] = 0;
+                    led[7] = 0;
+                    
                     seg[2] = 17;
                     seg[5] = 17;
                 }
@@ -151,11 +174,11 @@ void main()
             }
             break;
 
-            case 1:
+            case 20:
             {
-                if (one_tag != 1)
+                if (one_tag != 20)
                 {
-                    one_tag = 1;
+                    one_tag = 20;
                     seg[2] = 17;
                     seg[5] = 17;
 
@@ -209,16 +232,25 @@ void main()
             }
             break;
 
-            case 2:
+            case 1:
             {
                 // pcf8591 ADC
                 if (adc_flag)
                 {
                     adc_flag = 0;
-                 
-                    if (one_tag != 2)
+                    
+                    led[0] = 0;
+                    led[1] = 1;
+                    led[2] = 0;
+                    led[3] = 0;
+                    led[4] = 0;
+                    led[5] = 0;
+                    led[6] = 0;
+                    led[7] = 0;
+
+                    if (one_tag != 1)
                     {
-                        one_tag = 2;
+                        one_tag = 1;
                         seg[0] = 9;
                         seg[1] = 17;
                         seg[2] = 17;
@@ -250,18 +282,27 @@ void main()
             }
             break;
 
-            case 3:
+            case 2:
             {   
                 if (temp_flag)
                 {
                     temp_flag = 0;
-                    if (one_tag != 3)
+                    if (one_tag != 2)
                     {
-                        one_tag = 3;
+                        one_tag = 2;
+
+                        led[0] = 0;
+                        led[1] = 0;
+                        led[2] = 1;
+                        led[3] = 0;
+                        led[4] = 0;
+                        led[5] = 0;
+                        led[6] = 0;
+                        led[7] = 0;
 
                         seg[0] = 2;
                         seg[1] = 16;
-                        seg[6] = 23;
+                        seg[6] = 43;
                         seg[7] = 12;
 
                     }
@@ -274,7 +315,27 @@ void main()
                     seg[5] = temperature % 10;
                 }
             }
-                
+            break;
+
+            // ne555
+            case 3:
+            {
+
+            }
+            break;
+            // 超声波
+            case 4:
+            {
+
+            }
+            break;
+            
+            // pwm
+            case 5:
+            {
+
+            }
+            break;
         }
     }
 }
@@ -301,7 +362,7 @@ void Timer2_Isr(void) interrupt 12
         read_time_flag = 1;
     }
 
-    if (i % 5000 == 0)
+    if (i % 5000 == 0 && state == 20)
     {
         if (set_time_flag)
         {
@@ -322,8 +383,8 @@ void Timer2_Isr(void) interrupt 12
     {
         temp_flag = 1;
     }
-
 }
+
 
 
 

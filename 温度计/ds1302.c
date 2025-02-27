@@ -108,7 +108,7 @@ void read_time()
 
 void write_time(uchar* time)
 {	
-	uchar i;
+	uchar i;	
 	for (i = 0;i < 7;i++)
 		send_time[i] = hex_to_BCD(time[i]);
 	init_time();

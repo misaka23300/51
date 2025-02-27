@@ -20,6 +20,19 @@ static void I2C_Delay(unsigned char n)
     while(n--);      	
 }
 
+void Delay15ms()	//@12.000MHz
+{
+	unsigned char data i, j;
+
+	i = 176;
+	j = 21;
+	do
+	{
+		while (--j);
+	} while (--i);
+}
+
+
 //
 void I2CStart(void)
 {
@@ -111,9 +124,9 @@ void I2CSendAck(unsigned char ackbit)
 
 
 
-void at2402_read(uchar address)
+uchar at2402_read(uchar address)
 {
-    uchar data_;
+    uchar Data;
 
     I2CStart();
 
@@ -128,14 +141,16 @@ void at2402_read(uchar address)
     I2CSendByte(0xA1);
     I2CWaitAck();
 
-    data_ = I2CReceiveByte();
+    Data = I2CReceiveByte();
     I2CSendAck(1);
 
     I2CStop();
-    Delay10us();
+    Delay15ms();
+
+    return Data;
 }
 
-uchar at2402_wirte(uchar address,uchar data_)
+void at2402_write(uchar address,uchar Data)
 {
     I2CStart();
 
@@ -145,11 +160,11 @@ uchar at2402_wirte(uchar address,uchar data_)
     I2CSendByte(address);
     I2CWaitAck();
 
-    I2CSendByte(data_);
+    I2CSendByte(Data);
     I2CWaitAck();
 
     I2CStop();
-    I2CDelay10us();
+    Delay15ms();
 }
 
 
@@ -172,7 +187,7 @@ void AT24C02_Write(uchar *dat,uchar addr,uchar num)    //1.数据 2.地址 3.多
 		I2C_Delay(200);
 	}
 	I2CStop();
-	Delay5ms();
+	Delay15ms();
 }
 
 void AT24C02_Read(uchar *dat,uchar addr,uchar num)
