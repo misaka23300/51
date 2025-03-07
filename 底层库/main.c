@@ -72,7 +72,7 @@ void smg_proc()
                             clock[0] / 10, clock[0] % 10,
                             17,
                             clock[1] / 10, clock[1] % 10,
-                            17,
+                            17, 
                             clock[2] / 10, clock[2] % 10,
                         );
                     }
@@ -94,4 +94,23 @@ void smg_proc()
             break;
         }
     }
+}
+
+
+void main()
+{
+    boot_init();
+
+    if (seg_flag)
+    {
+        seg = 0;
+        ds1302_proc();
+    }
+}
+
+void ds1302_proc()
+{    
+    clock[2] = Get_Ds1302(0x81);
+    clock[1] = Get_ds1302(0x83);
+    clock[0] = Get_Ds1302(0x85);
 }
