@@ -17,15 +17,15 @@ void led(uchar i, bit state)
     if (last != tmp)
     {
         P0 = ~tmp;
-        Y4;
-        Y0;
+        batch(4);
+        batch(0);
 
         last = tmp;
     }
 }
 
 
-uchar led_display()
+void led_display()
 {
     static uchar i;
     led(i, led_value[i]);  
@@ -47,3 +47,4 @@ void s4_state(uchar j)
         }
     }
 }
+

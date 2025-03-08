@@ -81,4 +81,6 @@ float read_temperature()
 
 	temp = (high << 8) + low;
 	temp = temp / 16.0;
+	
+	return temp;
 }

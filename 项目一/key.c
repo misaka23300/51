@@ -73,7 +73,7 @@
         }
         break;
 
-        case 0:
+        case 3:
         {
             if (press != 0x0F)
             {

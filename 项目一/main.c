@@ -1,4 +1,4 @@
-#include "main.c"
+#include "main.h"
 
 #define KEY_TIME 15
 #define TEMP_TIME 1000
@@ -31,7 +31,7 @@ void main()
         if (key_flag)
         {
             key_flag = 0;
-            state = key_proc();
+            key_proc();
         }
 
         if (temperature_flag)
@@ -49,7 +49,7 @@ void timer_1() interrupt 3
     static uint i;
     i = (i + 1) % 30000;
 
-    seg_dpslay();
+    seg_display();
     led_display();
 
     if (i % KEY_TIME == 0)
@@ -151,12 +151,13 @@ void state_machine()
 void temperature_proc()
 {
     // 获取温度并转换为全局变量的数组
-    uchar i;
+    //uchar i;
     int temperature;
-
+		uchar temp_check;
     temperature = (int) (read_temperature() * 100);
 
-    uchar temp_check = (uchar)(temperature / 100) + adjust;
+    
+		temp_check = (uchar)(temperature / 100) + adjust;
     if (show_state)
     {
         if (temp_check > adjust)
@@ -207,12 +208,12 @@ void hex_to_seg(char *output, char input)
         output[0] = input / 10 % 10;
 
         // 删0加负号
-        if (arrays[1] == 0)
+        if (output[1] == 0)
         {
-            arrays[1] = 17;
+            output[1] = 17;
         }
         else
-            arrays[2] = 17;
+            output[2] = 17;
         
     }
     else
@@ -220,12 +221,13 @@ void hex_to_seg(char *output, char input)
         output[1] = input % 10;
         output[0] = input / 10 % 10;
 
-        delete_0(input_value, 2);
+        delete_0(output, 2);
     }
 }
 
 void delete_0(uchar* arrays, uchar j)
 {
+		uchar i;
     for (i = 0;i < (j - 1); i++)
     {
         if (arrays[i] == 0)

@@ -12,17 +12,28 @@ void boot_init()
     P7M0 = 0x00; P7M1 = 0x00; 
 
     P0 = 0xFF;
-    Y4;
-    Y0;
+    batch(4);
+    batch(0);
 
     P0 = 0xFF;
-    Y7;
-    Y0;
+    batch(7);
+    batch(0);
 
-    Y6;
-    Y0;
+    batch(6);
+    batch(0);
     
     P0 = 0xAF;
-    Y5;
-    Y0;
+    batch(5);
+    batch(0);
+}
+
+void batch(uchar i)
+{
+    switch (i)
+    {
+        case 4: P2 = (P2 & 0x0F) | 0x80; break;
+        case 5: P2 = (P2 & 0x0F) | 0xA0; break;
+        case 6: P2 = (P2 & 0x0F) | 0xC0; break;
+        case 7: P2 = (P2 & 0x0F) | 0xE0; break;
+    }
 }

@@ -15,16 +15,16 @@ void seg_display()
     static uchar i;
 
     P0 = 0xFF;
-    Y7;
-    Y0;
+    batch(7);
+    batch(0);
 
     P0 = 0x01 << i;
-    Y6;
-    Y0;
+    batch(6);
+    batch(0);
 
     P0 = ~letter[seg[i]];
-    Y7;
-    Y0;
+    batch(7);
+    batch(0);
 
     i = (i + 1)% 8;
 }
