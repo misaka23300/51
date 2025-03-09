@@ -24,11 +24,14 @@ press -> adjust -> adjust_value -> seg
 void main()
 {
     boot_init();
+    // 读取温度
     read_temperature();
+    // 初始化数组
     argument_proc();
     adjust_proc();
+    // 初始化led
     s4_state(state);
-    
+
     led_value[4] = show_state;
     led_value[5] = ~show_state;
 
@@ -89,6 +92,8 @@ void key_proc()
 
             led_value[4] = show_state;
             led_value[5] = ~show_state;
+
+            temperature_proc();
         }
         break;
 

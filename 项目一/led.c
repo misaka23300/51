@@ -35,20 +35,16 @@ void led_display()
 void s4_state(uchar j)
 {
     uchar i;
-    if (j < 3)
+    for (i = 0; i < 3;i++)
     {
-        for (i = 0; i < 3;i++)
+        if (i != j)
         {
-            if (i != j)
-            {
-                led_value[i] = 0;
-            }
-            else
-            {
-                led_value[i] = 1;
-            }
+            led_value[i] = 0;
+        }
+        else
+        {
+            led_value[i] = 1;
         }
     }
-    
 }
 
