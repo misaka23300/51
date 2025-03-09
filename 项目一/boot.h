@@ -9,6 +9,6 @@
 
 void boot_init();
 void batch(uchar i);
-
+void Timer1_Init();
 
 #endif

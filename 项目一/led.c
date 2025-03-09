@@ -1,17 +1,17 @@
 #include "led.h"
 
-led_value[8] = {0, 0, 0, 0 ,0, 0, 0, 0};
+uchar led_value[8] = {0, 0, 0, 0 ,0, 0, 0, 0};
 
 void led(uchar i, bit state)
 {
     static uchar last = 0xFF, tmp;
     if (state)
     {
-        tmp = tmp & ~(0x01 << i);
+        tmp = tmp | (0x01 << i);
     }
     else
     {
-        tmp = tmp | ~(0x01 << i);
+        tmp = tmp & ~(0x01 << i);
     }
 
     if (last != tmp)
@@ -35,16 +35,20 @@ void led_display()
 void s4_state(uchar j)
 {
     uchar i;
-    for (i = 0; i < 3;i++)
+    if (j < 3)
     {
-        if (i != j)
+        for (i = 0; i < 3;i++)
         {
-            led_value[i] = 0;
-        }
-        else
-        {
-            led_value[i] = 1;
+            if (i != j)
+            {
+                led_value[i] = 0;
+            }
+            else
+            {
+                led_value[i] = 1;
+            }
         }
     }
+    
 }
 

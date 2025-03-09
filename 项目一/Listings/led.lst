@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   LED                                                               03/08/2025 16:42:23 PAGE 1   
+C51 COMPILER V9.60.7.0   LED                                                               03/09/2025 16:32:49 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LED
@@ -10,18 +10,18 @@ line level    source
 
    1          #include "led.h"
    2          
-   3          led_value[8] = {0, 0, 0, 0 ,0, 0, 0, 0};
+   3          uchar led_value[8] = {0, 0, 0, 0 ,0, 0, 0, 0};
    4          
    5          void led(uchar i, bit state)
    6          {
    7   1          static uchar last = 0xFF, tmp;
    8   1          if (state)
    9   1          {
-  10   2              tmp = tmp & ~(0x01 << i);
+  10   2              tmp = tmp | (0x01 << i);
   11   2          }
   12   1          else
   13   1          {
-  14   2              tmp = tmp | ~(0x01 << i);
+  14   2              tmp = tmp & ~(0x01 << i);
   15   2          }
   16   1      
   17   1          if (last != tmp)
@@ -45,29 +45,33 @@ line level    source
   35          void s4_state(uchar j)
   36          {
   37   1          uchar i;
-  38   1          for (i = 0; i < 3;i++)
+  38   1          if (j < 3)
   39   1          {
-  40   2              if (i != j)
+  40   2              for (i = 0; i < 3;i++)
   41   2              {
-  42   3                  led_value[i] = 0;
-  43   3              }
-  44   2              else
-  45   2              {
-  46   3                  led_value[i] = 1;
-  47   3              }
-  48   2          }
-  49   1      }
-  50          
+  42   3                  if (i != j)
+  43   3                  {
+  44   4                      led_value[i] = 0;
+  45   4                  }
+  46   3                  else
+  47   3                  {
+  48   4                      led_value[i] = 1;
+  49   4                  }
+  50   3              }
+  51   2          }
+  52   1          
+  53   1      }
+  54          
+C51 COMPILER V9.60.7.0   LED                                                               03/09/2025 16:32:49 PAGE 2   
+
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    121    ----
-C51 COMPILER V9.60.7.0   LED                                                               03/08/2025 16:42:23 PAGE 2   
-
+   CODE SIZE        =    111    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     19    ----
+   DATA SIZE        =     11    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----       1
 END OF MODULE INFORMATION.

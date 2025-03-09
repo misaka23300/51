@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   LED                                                               01/20/2025 19:10:22 PAGE 1   
+C51 COMPILER V9.60.7.0   LED                                                               03/09/2025 15:19:51 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE LED
@@ -62,7 +62,7 @@ line level    source
   52   1          else
   53   1          {
   54   2              led_array[i] = 0;
-C51 COMPILER V9.60.7.0   LED                                                               01/20/2025 19:10:22 PAGE 2   
+C51 COMPILER V9.60.7.0   LED                                                               03/09/2025 15:19:51 PAGE 2   
 
   55   2              if(i == 0) 
   56   2              {

@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   BOOT                                                              01/20/2025 19:10:22 PAGE 1   
+C51 COMPILER V9.60.7.0   BOOT                                                              03/09/2025 15:19:51 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE BOOT
@@ -33,39 +33,37 @@ line level    source
   23   1          switch(i)
   24   1          {
   25   2              case 0:{P2 = P2 & 0x1F;break;}
-  26   2              case 1:{P2 = (P2 & 0x1F) | 0x20;break;}
-  27   2              case 2:{P2 = (P2 & 0x1F) | 0x40;break;}
-  28   2              case 3:{P2 = (P2 & 0x1F) | 0x60;break;}
-  29   2              case 4:{P2 = (P2 & 0x1F) | 0x80;break;}
-  30   2              case 5:{P2 = (P2 & 0x1F) | 0xA0;break;}
-  31   2              case 6:{P2 = (P2 & 0x1F) | 0xC0;break;}
-  32   2              case 7:{P2 = (P2 & 0x1F) | 0xE0;break;}
-  33   2          }    
-  34   1      }
-  35          
-  36          void Timer0Init(void)   //1毫秒@12.000MHz
-  37          {
-  38   1        AUXR &= 0x7F;   //定时器时钟12T模式
-  39   1        TMOD &= 0xF0;   //设置定时器模式
-  40   1        TL0 = 0x18;   //设置定时初值
-  41   1        TH0 = 0xFC;   //设置定时初值
-  42   1        TF0 = 0;    //清除TF0标志
-  43   1        TR0 = 1;    //定时器0开始计时
-  44   1          ET0 = 1;
-  45   1          EA = 1;
-  46   1      }
+  26   2              
+  27   2              case 4:{P2 = (P2 & 0x1F) | 0x80;break;}
+  28   2              case 5:{P2 = (P2 & 0x1F) | 0xA0;break;}
+  29   2              case 6:{P2 = (P2 & 0x1F) | 0xC0;break;}
+  30   2              case 7:{P2 = (P2 & 0x1F) | 0xE0;break;}
+  31   2          }    
+  32   1      }
+  33          
+  34          void Timer0Init(void)   //1毫秒@12.000MHz
+  35          {
+  36   1        AUXR &= 0x7F;   //定时器时钟12T模式
+  37   1        TMOD &= 0xF0;   //设置定时器模式
+  38   1        TL0 = 0x18;   //设置定时初值
+  39   1        TH0 = 0xFC;   //设置定时初值
+  40   1        TF0 = 0;    //清除TF0标志
+  41   1        TR0 = 1;    //定时器0开始计时
+  42   1          ET0 = 1;
+  43   1          EA = 1;
+  44   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    173    ----
+   CODE SIZE        =    127    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
-C51 COMPILER V9.60.7.0   BOOT                                                              01/20/2025 19:10:22 PAGE 2   
-
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
+C51 COMPILER V9.60.7.0   BOOT                                                              03/09/2025 15:19:51 PAGE 2   
+
 END OF MODULE INFORMATION.
 
 

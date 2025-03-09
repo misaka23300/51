@@ -25,6 +25,12 @@ void main()
 {
     boot_init();
     read_temperature();
+    argument_proc();
+    adjust_proc();
+    s4_state(state);
+    
+    led_value[4] = show_state;
+    led_value[5] = ~show_state;
 
     while (1)
     {
@@ -81,13 +87,13 @@ void key_proc()
         {
             show_state = ~show_state;
 
-            led_value[3] = show_state;
-            led_value[4] = ~show_state;
+            led_value[4] = show_state;
+            led_value[5] = ~show_state;
         }
         break;
 
         case 8:
-        {
+        {   
             if (state == 1)
             {
                 adjust = (adjust + 1) % 100;
@@ -108,12 +114,14 @@ void key_proc()
                 adjust--;
                 if (adjust == -99)
                     adjust = 0;
+                adjust_proc();
             }
             else if (state == 2)
             {
                 argument--;
                 if (argument == -99)
                     argument = 0;
+                argument_proc();
             }
         }
         break;
@@ -129,20 +137,20 @@ void state_machine()
         case 0:
         {
             //C x x x x T T T
-            set_seg(12, 16, 16, 16, 16, temp_value[2], temp_value[1] + 32, temp_value[0]);
+            set_seg(12, 16, 16, 16, 16, temp_value[0], temp_value[1] + 32, temp_value[2]);
         }
         break;
 
         case 1:
         {
             // 需要显示负数
-            set_seg(14, 16, 16, 16, 16, adjust_value[2], adjust_value[1], adjust_value[0]);
+            set_seg(14, 16, 16, 16, 16, adjust_value[0], adjust_value[1], adjust_value[2]);
         }
         break;
 
         case 2:
         {
-            set_seg(21, 16, 16, 16, 16, argument_value[2], argument_value[1], argument_value[0]);
+            set_seg(21, 16, 16, 16, 16, argument_value[0], argument_value[1], argument_value[2]);
         }
         break;
     }
@@ -154,13 +162,13 @@ void temperature_proc()
     //uchar i;
     int temperature;
 		uchar temp_check;
-    temperature = (int) (read_temperature() * 100);
-
+    temperature = (int) ( (read_temperature() + adjust)* 100) ;
+    // 25 44 + adjust
     
-		temp_check = (uchar)(temperature / 100) + adjust;
+	temp_check = (uchar)(temperature / 100);
     if (show_state)
     {
-        if (temp_check > adjust)
+        if (temp_check > argument)
         {
             led_value[7] = 1; 
         }
@@ -171,7 +179,7 @@ void temperature_proc()
     }
     else
     {
-        if (temp_check < adjust)
+        if (temp_check < argument)
         {
             led_value[7] = 1; 
         }
@@ -181,7 +189,7 @@ void temperature_proc()
         }
     }
     
-    temperature = temperature + adjust;
+    
     temp_value[0] = (uchar) (temperature / 1000 % 10);
     temp_value[1] = (uchar) (temperature / 100 % 10);
     temp_value[2] = (uchar) (temperature / 10 % 10) ;
@@ -199,35 +207,39 @@ void argument_proc()
     hex_to_seg(argument_value, argument);
 }
 
+// 0 符号  1 十位数  2 个位数
 void hex_to_seg(char *output, char input)
 {
     if (input < 0)
     {
         input = -input;
-        output[1] = input % 10;
-        output[0] = input / 10 % 10;
+        output[1] = input / 10 % 10;
+        output[2] = input % 10;
 
         // 删0加负号
         if (output[1] == 0)
         {
             output[1] = 17;
+            output[0] = 16;
         }
         else
-            output[2] = 17;
+            output[0] = 17;
         
     }
     else
     {
-        output[1] = input % 10;
-        output[0] = input / 10 % 10;
+        output[0] = 16;
+        output[1] = input / 10 % 10;
+        output[2] = input % 10;
 
-        delete_0(output, 2);
+        if (output[1] == 0)
+            output[1] = 16;
     }
 }
 
 void delete_0(uchar* arrays, uchar j)
 {
-		uchar i;
+	uchar i;
     for (i = 0;i < (j - 1); i++)
     {
         if (arrays[i] == 0)
